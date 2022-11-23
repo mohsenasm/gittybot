@@ -98,7 +98,7 @@ class MessageCreator:
                 "5. Modify *Trigger Check List* and click on *Add Webhook*"
 
     def help_github(self):
-        return "1. Go to *your project* on the Github website\n" +\
+        return "1. Go to *your project* on the GitHub website\n" +\
                 "2. Click on *⚙ Settings*\n" +\
                 "3. Choose *Webhooks* from left menu\n" +\
                 "4. Click on *Add Webhook* button\n" +\
