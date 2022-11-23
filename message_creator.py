@@ -80,18 +80,28 @@ class MessageCreator:
 
         return True, message
 
+    def new_gitlab(self, url, secret):
+        return "Set this url in your gitlab webhook setting:\n" +\
+                "URL: {}\nSecret Token: <code>{}</code>\n".format(url, secret) +\
+                'Send /help_gitlab for more info.'
+    
+    def new_github(self, url, secret):
+        return "Set this url in your github webhook setting:\n" +\
+                "URL: {}\nSecret Token: <code>{}</code>\n".format(url, secret) +\
+                'Send /help_github for more info.'
+    
     def help_gitlab(self):
-        return "1. Go to *your project* on  https://gitlab.com\n" +\
+        return "1. Go to *your project* on the GitLab website\n" +\
                 "2. Click on *setting*⚙ icon\n" +\
                 "3. Click on *integrations*\n" +\
-                "4. Enter *URL* and *Secret Token* and check *Enable SSL verification*\n" +\
+                "4. Enter *URL*, *Secret Token* and, check *Enable SSL verification*\n" +\
                 "5. Modify *Trigger Check List* and click on *Add Webhook*"
 
     def help_github(self):
-        return "1. Go to *your project* on  https://github.com\n" +\
+        return "1. Go to *your project* on the Github website\n" +\
                 "2. Click on *⚙ Settings*\n" +\
                 "3. Choose *Webhooks* from left menu\n" +\
                 "4. Click on *Add Webhook* button\n" +\
-                "5. Enter *URL* and *Secret Token* and choose *application/json* for *Content type* field\n" +\
+                "5. Enter *URL*, *Secret Token* and, choose *application/json* for the Content type field\n" +\
                 "6. Choose *Send me everything.*\n" +\
                 "7. Check *Active* and click on *Add Webhook* button"

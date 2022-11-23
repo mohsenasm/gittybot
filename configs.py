@@ -1,5 +1,9 @@
 import os
+from dotenv import load_dotenv
 
+if os.path.isfile("secret.env"):
+    print("loading envs from secret.env")
+    load_dotenv("secret.env")  # take environment variables from .env.
 
 BOT_ADMIN_ID = os.environ['BOT_ADMIN_ID']
 LOG_VIEWER_USERNAME = os.environ['LOG_VIEWER_USERNAME']

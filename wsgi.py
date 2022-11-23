@@ -51,7 +51,7 @@ def webhook():
 @application.route('/logs/')
 @auth.login_required
 def logs():
-    return send_from_directory(os.path.dirname(__file__), 'all_logs.txt')
+    return send_from_directory(os.path.dirname(__file__), 'logs.txt')
 
 
 @application.route('/ping/')

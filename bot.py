@@ -2,7 +2,7 @@ import os
 from queue import Queue
 from threading import Thread
 from telegram import Bot, ParseMode
-from telegram.ext import Dispatcher, MessageHandler, Updater, CommandHandler
+from telegram.ext import Dispatcher, MessageHandler, Updater, CommandHandler, filters
 from message_creator import MessageCreator
 from configs import *
 import hashlib
@@ -27,47 +27,36 @@ def get_token(id):
     return str(hex_dig)
 
 
-def new_gitlab(update, context):
+def new_gitlab(update, context, log_the_event=True):
     bot = context.bot
     id = update.message.chat_id
     if id < 0:
         id = "n" + str(-id)
     else:
         id = "p" + str(id)
-    log_text("new_gitlab " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
+    if log_the_event:
+        log_text("new_gitlab " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
     bot.sendMessage(update.message.chat_id,
-                    text='Set this url in your gitlab webhook setting:\nURL: {}\nSecret Token: {}'
-                    .format(url_prefix_gitlab + id, get_token(id)))
+        text=message_creator.new_gitlab(url_prefix_gitlab + id, get_token(id)), parse_mode=ParseMode.HTML)
 
-
-def new_github(update, context):
+def new_github(update, context, log_the_event=True):
     bot = context.bot
     id = update.message.chat_id
     if id < 0:
         id = "n" + str(-id)
     else:
         id = "p" + str(id)
-    log_text("new_github " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
+    if log_the_event:
+        log_text("new_github " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
     bot.sendMessage(update.message.chat_id,
-                    text='Set this url in your github webhook setting:\nURL: {}\nSecret Token: {}'
-                    .format(url_prefix_github + id, get_token(id)))
+        text=message_creator.new_github(url_prefix_github + id, get_token(id)), parse_mode=ParseMode.HTML)
 
 
-def new_gitlab_github(update, context):
+def start(update, context):
     bot = context.bot
-    id = update.message.chat_id
-    if id < 0:
-        id = "n" + str(-id)
-    else:
-        id = "p" + str(id)
     log_text("start " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
-    bot.sendMessage(update.message.chat_id,
-                    text='Set this url in your gitlab webhook setting:\nURL: {}\nSecret Token: {}'
-                    .format(url_prefix_gitlab + id, get_token(id)))
-    bot.sendMessage(update.message.chat_id,
-                    text='Set this url in your github webhook setting:\nURL: {}\nSecret Token: {}'
-                    .format(url_prefix_github + id, get_token(id)))
-
+    new_gitlab(update, context, log_the_event=False)
+    new_github(update, context, log_the_event=False)
 
 def help_gitlab(update, context):
     bot = context.bot
@@ -99,7 +88,7 @@ def log_text(line, bot=None):
                 bot.sendMessage(85984800, text=(str(datetime.now()) + " " + str(line)))
     except:
         pass
-    with open(os.path.join(os.path.dirname(__file__),"all_logs.txt"), "a") as f:
+    with open(os.path.join(os.path.dirname(__file__),"logs.txt"), "a") as f:
         f.write(str(datetime.now()) + " " + str(line) + "\n")
 
 
@@ -114,14 +103,15 @@ def setup(webhook_url=None):
         updater = Updater(BOT_SECRET)
         bot = updater.bot
         dp = updater.dispatcher
-    dp.add_handler(CommandHandler("start", new_gitlab_github))
+    dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("new_gitlab", new_gitlab))
     dp.add_handler(CommandHandler("new_github", new_github))
     dp.add_handler(CommandHandler("help_gitlab", help_gitlab))
     dp.add_handler(CommandHandler("help_github", help_github))
 
     if TEST_MODE:
-        dp.add_handler(MessageHandler([], echo))
+        log_text("start in test mode")
+        dp.add_handler(MessageHandler(filters.Filters.text | filters.Filters.command, echo))
 
     # log all errors
     dp.add_error_handler(error)
@@ -135,8 +125,6 @@ def setup(webhook_url=None):
         bot.set_webhook()  # Delete webhook
         updater.start_polling()
         updater.idle()
-
-
 
 
 if __name__ == '__main__':
