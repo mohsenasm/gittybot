@@ -5,7 +5,11 @@ By using [@gittybot](https://t.me/Gittybot) you can easily recieve git events, s
 
 # Usage
 
-Simply go to [@gittybot](https://t.me/Gittybot) chat and type /start. It will send you the instruction to add the Gittybot webhook address to your GitHub/GitLab reporitories.
+Simply go to [@gittybot](https://t.me/Gittybot) and type /start. It will send you the instruction to add the GittyBot's webhook address to your GitHub/GitLab reporitories.
+
+Feel free to contact me, if you have any idea for improvement.
+
+If you are using this bot, please give this repo a star ⭐️.
 
 ## Privacy
 
@@ -13,6 +17,4 @@ As you can check the source code, the only data that is loged/stored is your tel
 Your git reporitory name or commit messages will not be saved and/or logged.
 
 # Lisence
-GPL.
-
-Feel free to contact me, if you have any idea for improvement.
+GNU General Public License
