@@ -74,7 +74,7 @@ class MessageCreator:
         elif kind == "create":
             ref = webhook_request.json["ref"]
             user_name = webhook_request.json["sender"]['login']
-            message = "📢 New <b>{}</b> on <i>{}</i>({}) by {} 📢 \n".format(webhook_request['ref_type'], project, ref, user_name)
+            message = "📢 New <b>{}</b> on <i>{}</i>({}) by {} 📢 \n".format(webhook_request.json['ref_type'], project, ref, user_name)
         else:
             return False, ""
 
