@@ -17,4 +17,4 @@ As you can check the source code, the only data that is loged/stored is your tel
 Your git reporitory name or commit messages will not be saved and/or logged.
 
 # Lisence
-GPL.
+GNU General Public License
