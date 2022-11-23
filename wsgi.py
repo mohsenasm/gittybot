@@ -1,6 +1,6 @@
 import os
 import bot
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, redirect
 from telegram import Update
 from configs import BOT_SECRET, PORT, WEBHOOK_BASE_URL, LOG_VIEWER_USERNAME, LOG_VIEWER_PASSWORD
 from git_webhook import git_app
@@ -37,8 +37,7 @@ application.register_blueprint(git_app)
 
 @application.route('/')
 def not_found():
-    """Server won't respond in Heroku if we don't handle the root path."""
-    return 'Hello!!'
+    return redirect("https://github.com/mohsenasm/gittybot/blob/main/README.md")
 
 
 @application.route('/' + BOT_SECRET, methods=['GET', 'POST'])
