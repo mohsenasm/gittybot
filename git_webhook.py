@@ -13,9 +13,9 @@ url_prefix_gitlab = WEBHOOK_BASE_URL + "/gitlab/"
 url_prefix_github = WEBHOOK_BASE_URL + "/github/"
 
 # Enable logging
-# import logging
-# logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#                     level=logging.INFO)
+import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
 
 @git_app.route('/gitlab/<string:id>', methods=["POST"])
@@ -56,3 +56,44 @@ def validate_github_signature(token, data, signature):
     GitHub_secret = bytes(token, 'UTF-8')
     mac = hmac.new(GitHub_secret, msg=data, digestmod=hashlib.sha1)
     return hmac.compare_digest('sha1=' + mac.hexdigest(), signature)
+
+# the rest of the code will be removed after November 28th, 2022
+from configs import HEROKU_KEY
+
+@git_app.route('/gitlab/heroku/<string:id>', methods=["POST"])
+def gitlab_heroku(id):
+    can_send, message = message_creator.gitlab(request)
+
+    if request.headers['X-Gitlab-Token'] != get_token_heroku(id):
+        return Response(status=403)
+
+    if can_send:
+        chat_id = id[1:]
+        if id[0] == 'n':
+            chat_id = -1 * int(chat_id)
+        log_text("gitlab " + str(chat_id))
+        bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    return Response(status=200)
+
+
+@git_app.route('/github/heroku/<string:id>', methods=["POST"])
+def github_heroku(id):
+    can_send, message = message_creator.github(request)
+
+    signature = request.headers.get('X-Hub-Signature')
+    data = request.data
+    if not validate_github_signature(get_token_heroku(id), data, signature):
+        return Response(status=403)
+
+    if can_send:
+        chat_id = id[1:]
+        if id[0] == 'n':
+            chat_id = -1 * int(chat_id)
+        log_text("github " + str(chat_id))
+        bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    return Response(status=200)
+
+def get_token_heroku(id):
+    hash_object = hashlib.md5((str(id) + HEROKU_KEY).encode())
+    hex_dig = hash_object.hexdigest()
+    return str(hex_dig)
