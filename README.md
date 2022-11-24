@@ -13,7 +13,7 @@ If you are using this bot, please give this repo a star ⭐️.
 
 ## Privacy
 
-As you can check the source code, the only data that is loged/stored is your telegram ID, which is stored for critical notification such as situations when you need to change the webhook url.
+As you can check the source code, the only data that is loged is chats' telegram info, which is stored for critical notification such as situations when you need to change the webhook url.
 Your git reporitory name or commit messages will not be saved and/or logged.
 
 # Lisence
