@@ -58,18 +58,17 @@ def start(update, context):
     new_gitlab(update, context, log_the_event=False)
     new_github(update, context, log_the_event=False)
 
+
 def help_gitlab(update, context):
     bot = context.bot
     log_text("help_gitlab " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
     bot.sendMessage(update.message.chat_id, text=message_creator.help_gitlab(), parse_mode=ParseMode.MARKDOWN)
-    new_gitlab(bot, update)
 
 
 def help_github(update, context):
     bot = context.bot
     log_text("help_github " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
     bot.sendMessage(update.message.chat_id, text=message_creator.help_github(), parse_mode=ParseMode.MARKDOWN)
-    new_github(bot, update)
 
 
 def echo(update, context):
