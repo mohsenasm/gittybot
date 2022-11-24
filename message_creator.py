@@ -82,13 +82,26 @@ class MessageCreator:
 
     def new_gitlab(self, url, secret):
         return "Set this url in your gitlab webhook setting:\n" +\
-                "URL: {}\nSecret Token: <code>{}</code>\n".format(url, secret) +\
+                "URL: <code>{}</code>\nSecret Token: <code>{}</code>\n".format(url, secret) +\
                 'Send /help_gitlab for more info.'
-    
+
     def new_github(self, url, secret):
         return "Set this url in your github webhook setting:\n" +\
-                "URL: {}\nSecret Token: <code>{}</code>\n".format(url, secret) +\
+                "URL: <code>{}</code>\nSecret Token: <code>{}</code>\n".format(url, secret) +\
                 'Send /help_github for more info.'
+
+    def migrate_from_heroku_notification(self, github_url, gitlab_url, secret):
+        return \
+            "⚠️ <b>Action Required</b>\n\n" +\
+            "To continue using GittyBot, you need to <b>update both the Webhook URL and the Secret Token</b> in your GitHub/GitLab project settings.\n\n" +\
+            "Click on /help_github or /help_gitlab, if you need help finding the webhook settings.\n\n" +\
+            "New GitHub Webhook URL: <code>{}</code>\n\n".format(github_url) +\
+            "New GitLab Webhook URL: <code>{}</code>\n\n".format(gitlab_url) +\
+            "New Secret Token: <code>{}</code>\n\n".format(secret) +\
+            "〰〰〰〰〰\n" +\
+            "More info:\n" +\
+            "GittyBot is up for more than 6 years, using the free plan of the Heroku cloud platform. But unfortunately, starting November 28th, 2022, free Heroku services will no longer be available. So, to continue the bot's service, I moved it to another cloud. Therefore, the old URLs need to be changed.\n" +\
+            "By the way, I recently made this bot open-source. The code is available at https://github.com/mohsenasm/gittybot. Any star ⭐️ is appreciated!"
     
     def help_gitlab(self):
         return "1. Go to *your project* on the GitLab website\n" +\

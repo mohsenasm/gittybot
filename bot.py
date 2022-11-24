@@ -77,6 +77,31 @@ def echo(update, context):
     bot.sendMessage(update.message.chat_id, text=update.message.text)
 
 
+def check_admin_command(update, context):
+    bot = context.bot
+    if (str(update.message.chat_id) == BOT_ADMIN_ID):
+        lines = update.message.text.split("\n")
+        if "!migrate_from_heroku_notification" == lines[0]:
+            chat_ids = set()
+            for l in lines[1:]:
+                if len(l) > 0:
+                    chat_ids.add(int(l))
+            log_text("migrate_from_heroku_notification " + str(chat_ids), bot)
+            for chat_id in chat_ids:
+                if chat_id < 0:
+                    id = "n" + str(-chat_id)
+                else:
+                    id = "p" + str(chat_id)
+                bot.sendMessage(
+                    chat_id, 
+                    text=message_creator.migrate_from_heroku_notification(
+                        url_prefix_github + id, 
+                        url_prefix_gitlab + id, 
+                        get_token(id)), 
+                    parse_mode=ParseMode.HTML,
+                    disable_web_page_preview=True)
+
+
 def error(update, context):
     logger.warn('Update "%s" caused error "%s"' % (update, context.error))
     log_text('error update: "%s" caused error: "%s"' % (update, context.error))
@@ -109,9 +134,12 @@ def setup(webhook_url=None):
     dp.add_handler(CommandHandler("help_gitlab", help_gitlab))
     dp.add_handler(CommandHandler("help_github", help_github))
 
-    if TEST_MODE:
-        log_text("start in test mode")
-        dp.add_handler(MessageHandler(filters.Filters.text | filters.Filters.command, echo))
+    dp.add_handler(MessageHandler(filters.Filters.text | filters.Filters.command, check_admin_command))
+
+    # if TEST_MODE:
+    #     dp.add_handler(MessageHandler(filters.Filters.text | filters.Filters.command, echo))
+
+    log_text("start the bot")
 
     # log all errors
     dp.add_error_handler(error)
