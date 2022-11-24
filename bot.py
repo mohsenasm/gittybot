@@ -101,7 +101,9 @@ def check_admin_command(update, context):
                         parse_mode=ParseMode.HTML,
                         disable_web_page_preview=True)
                 except Exception as e:
-                    log_text("error in migrate_from_heroku_notification for " + str(chat_id) + " " + str(e), bot)
+                    log_text("error for " + str(chat_id) + " " + str(e), bot)
+                else:
+                    log_text("sent to " + str(chat_id), bot)
 
 
 
