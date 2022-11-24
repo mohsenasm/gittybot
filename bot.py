@@ -91,14 +91,18 @@ def check_admin_command(update, context):
                     id = "n" + str(-chat_id)
                 else:
                     id = "p" + str(chat_id)
-                bot.sendMessage(
-                    chat_id, 
-                    text=message_creator.migrate_from_heroku_notification(
-                        url_prefix_github + id, 
-                        url_prefix_gitlab + id, 
-                        get_token(id)), 
-                    parse_mode=ParseMode.HTML,
-                    disable_web_page_preview=True)
+                try:
+                    bot.sendMessage(
+                        chat_id, 
+                        text=message_creator.migrate_from_heroku_notification(
+                            url_prefix_github + id, 
+                            url_prefix_gitlab + id, 
+                            get_token(id)), 
+                        parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True)
+                except Exception as e:
+                    log_text("error in migrate_from_heroku_notification for " + str(chat_id) + " " + str(e), bot)
+
 
 
 def error(update, context):
@@ -109,7 +113,7 @@ def error(update, context):
 def log_text(line, bot=None):
     try:
         if bot:
-                bot.sendMessage(85984800, text=(str(datetime.now()) + " " + str(line)))
+            bot.sendMessage(BOT_ADMIN_ID, text=(str(datetime.now()) + " " + str(line)))
     except:
         pass
     with open(os.path.join(os.path.dirname(__file__),"logs.txt"), "a") as f:
