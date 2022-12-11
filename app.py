@@ -27,6 +27,7 @@ def verify_password(username, password):
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 print("bot.setup {}".format(WEBHOOK_BASE_URL))
+
 update_queue, bot_instance = bot.setup(webhook_url='{}/{}'.format(
     WEBHOOK_BASE_URL,
     BOT_SECRET
