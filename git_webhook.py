@@ -20,6 +20,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 @git_app.route('/gitlab/<string:id>', methods=["POST"])
 def gitlab(id):
+    if 'X-Gitlab-Token' not in request.headers:
+        return "The 'Secret Token' is not in the request", 400
+
     can_send, message = message_creator.gitlab(request)
 
     if request.headers['X-Gitlab-Token'] != get_token(id):
@@ -36,6 +39,9 @@ def gitlab(id):
 
 @git_app.route('/github/<string:id>', methods=["POST"])
 def github(id):
+    if 'X-Hub-Signature' not in request.headers:
+        return "The 'Secret Token' is not in the request", 400
+
     can_send, message = message_creator.github(request)
 
     signature = request.headers.get('X-Hub-Signature')
