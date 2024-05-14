@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, request, Response, Blueprint
+from flask import request, Response, Blueprint
 from message_creator import MessageCreator
 import hashlib
 import telegram

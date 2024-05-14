@@ -4,3 +4,5 @@ uvicorn
 six
 asgiref
 gunicorn
+flask_httpauth
+python-dotenv
