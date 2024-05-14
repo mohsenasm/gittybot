@@ -7,6 +7,7 @@ import telegram
 import hmac
 from configs import WEBHOOK_BASE_URL
 from bot import log_text, bot_container, get_token
+from telegram.constants import ParseMode
 
 git_app = Blueprint('git_app', __name__)
 message_creator = MessageCreator()
@@ -33,7 +34,7 @@ async def gitlab(id):
         if id[0] == 'n':
             chat_id = -1 * int(chat_id)
         await log_text("gitlab " + str(chat_id))
-        await bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+        await bot_container.bot.sendMessage(chat_id, text=message, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
     return Response(status=200)
 
 
@@ -54,7 +55,7 @@ async def github(id):
         if id[0] == 'n':
             chat_id = -1 * int(chat_id)
         await log_text("github " + str(chat_id))
-        await bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+        await bot_container.bot.sendMessage(chat_id, text=message, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
     return Response(status=200)
 
 
