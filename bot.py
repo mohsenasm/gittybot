@@ -25,7 +25,7 @@ def get_token(id):
     hex_dig = hash_object.hexdigest()
     return str(hex_dig)
 
-def new_gitlab(update, context, log_the_event=True):
+async def new_gitlab(update, context, log_the_event=True):
     bot = update.get_bot()
     id = update.message.chat_id
     if id < 0:
@@ -33,11 +33,11 @@ def new_gitlab(update, context, log_the_event=True):
     else:
         id = "p" + str(id)
     if log_the_event:
-        log_text("new_gitlab " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
-    bot.sendMessage(update.message.chat_id,
+        await log_text("new_gitlab " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
+    await bot.sendMessage(update.message.chat_id,
         text=message_creator.new_gitlab(url_prefix_gitlab + id, get_token(id)), parse_mode=ParseMode.HTML)
 
-def new_github(update, context, log_the_event=True):
+async def new_github(update, context, log_the_event=True):
     bot = update.get_bot()
     id = update.message.chat_id
     if id < 0:
@@ -45,38 +45,30 @@ def new_github(update, context, log_the_event=True):
     else:
         id = "p" + str(id)
     if log_the_event:
-        log_text("new_github " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
-    bot.sendMessage(update.message.chat_id,
+        await log_text("new_github " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
+    await bot.sendMessage(update.message.chat_id,
         text=message_creator.new_github(url_prefix_github + id, get_token(id)), parse_mode=ParseMode.HTML)
 
-def start(update, context):
+async def start(update, context):
     bot = update.get_bot()
-    log_text("start " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
-    new_gitlab(update, context, log_the_event=False)
-    new_github(update, context, log_the_event=False)
+    await log_text("start " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
+    await new_gitlab(update, context, log_the_event=False)
+    await new_github(update, context, log_the_event=False)
 
-def help_gitlab(update, context):
+async def help_gitlab(update, context):
     bot = update.get_bot()
-    log_text("help_gitlab " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
-    bot.sendMessage(update.message.chat_id, text=message_creator.help_gitlab(), parse_mode=ParseMode.MARKDOWN)
+    await log_text("help_gitlab " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
+    await bot.sendMessage(update.message.chat_id, text=message_creator.help_gitlab(), parse_mode=ParseMode.MARKDOWN)
 
-def help_github(update, context):
+async def help_github(update, context):
     bot = update.get_bot()
-    log_text("help_github " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
-    bot.sendMessage(update.message.chat_id, text=message_creator.help_github(), parse_mode=ParseMode.MARKDOWN)
+    await log_text("help_github " + str(update.message.chat_id) + " " + str(update.message.from_user.username) + " " + str(update.message.chat.title), bot)
+    await bot.sendMessage(update.message.chat_id, text=message_creator.help_github(), parse_mode=ParseMode.MARKDOWN)
 
-def echo(update, context):
-    bot = update.get_bot()
-    bot.sendMessage(update.message.chat_id, text=update.message.text)
-
-def error(update, context):
-    logger.warn('Update "%s" caused error "%s"' % (update, context.error))
-    log_text('error update: "%s" caused error: "%s"' % (update, context.error))
-
-def log_text(line, bot=None):
+async def log_text(line, bot=None):
     try:
         if bot:
-            bot.sendMessage(BOT_ADMIN_ID, text=(str(datetime.now()) + " " + str(line)))
+            await bot.sendMessage(BOT_ADMIN_ID, text=(str(datetime.now()) + " " + str(line)))
     except:
         pass
     with open(os.path.join(os.path.dirname(__file__),"logs.txt"), "a") as f:

@@ -19,7 +19,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 
 @git_app.route('/gitlab/<string:id>', methods=["POST"])
-def gitlab(id):
+async def gitlab(id):
     if 'X-Gitlab-Token' not in request.headers:
         return "The 'Secret Token' is not in the request", 400
 
@@ -32,13 +32,13 @@ def gitlab(id):
         chat_id = id[1:]
         if id[0] == 'n':
             chat_id = -1 * int(chat_id)
-        log_text("gitlab " + str(chat_id))
-        bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+        await log_text("gitlab " + str(chat_id))
+        await bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
     return Response(status=200)
 
 
 @git_app.route('/github/<string:id>', methods=["POST"])
-def github(id):
+async def github(id):
     if 'X-Hub-Signature' not in request.headers:
         return "The 'Secret Token' is not in the request", 400
 
@@ -53,8 +53,8 @@ def github(id):
         chat_id = id[1:]
         if id[0] == 'n':
             chat_id = -1 * int(chat_id)
-        log_text("github " + str(chat_id))
-        bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+        await log_text("github " + str(chat_id))
+        await bot_container.bot.sendMessage(chat_id, text=message, parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
     return Response(status=200)
 
 
