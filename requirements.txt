@@ -1,8 +1,35 @@
-Flask[async]
-python-telegram-bot
-uvicorn
-six
-asgiref
-gunicorn
-flask_httpauth
-python-dotenv
+# installed:
+# Flask[async]
+# python-telegram-bot
+# uvicorn
+# six
+# asgiref
+# gunicorn
+# flask_httpauth
+# python-dotenv
+
+# freezed:
+anyio==4.3.0
+asgiref==3.8.1
+blinker==1.8.2
+certifi==2024.2.2
+click==8.1.7
+Flask==3.0.3
+Flask-HTTPAuth==4.8.0
+gunicorn==22.0.0
+h11==0.14.0
+httpcore==1.0.5
+httpx==0.27.0
+idna==3.7
+itsdangerous==2.2.0
+Jinja2==3.1.4
+MarkupSafe==2.1.5
+packaging==24.0
+python-dotenv==1.0.1
+python-telegram-bot==21.1.1
+setuptools==69.5.1
+six==1.16.0
+sniffio==1.3.1
+uvicorn==0.29.0
+Werkzeug==3.0.3
+wheel==0.43.0
