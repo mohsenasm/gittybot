@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 import asyncio
 import logging
 from http import HTTPStatus
@@ -33,7 +34,7 @@ class TelegramBotUvicornWorker(UvicornWorker):
         self._install_sigquit_handler()
 
         # sleep to prevent Telegram's Flood control
-        await asyncio.sleep(3)
+        await asyncio.sleep(random.randint(0, 5))
         
         bot_app = await self.config.app.get_bot_app()
         async with bot_app:
