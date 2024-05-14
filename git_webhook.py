@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 import logging
-from flask import request, Response, Blueprint
-from message_creator import MessageCreator
 import hashlib
-import telegram
 import hmac
+
+import telegram
+from telegram.constants import ParseMode
+
+from flask import request, Response, Blueprint
+
 from configs import WEBHOOK_BASE_URL
 from bot import log_text, bot_container, get_token
-from telegram.constants import ParseMode
+from message_creator import MessageCreator
+
 
 git_app = Blueprint('git_app', __name__)
 message_creator = MessageCreator()
