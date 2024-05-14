@@ -88,4 +88,6 @@ async def create_bot():
 
     await bot_app.bot.set_webhook(url=f"{WEBHOOK_BASE_URL}/telegram", allowed_updates=Update.ALL_TYPES)
 
+    bot_container.bot = bot_app.bot
+
     return bot_app
