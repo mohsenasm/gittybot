@@ -17,4 +17,3 @@ if TEST_MODE:
     BOT_SECRET = os.environ['TEST_BOT_SECRET']
 else:
     BOT_SECRET = os.environ['BOT_SECRET']
-

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from flask import request, Response, Blueprint
 from message_creator import MessageCreator
 import hashlib
@@ -13,7 +14,6 @@ url_prefix_gitlab = WEBHOOK_BASE_URL + "/gitlab/"
 url_prefix_github = WEBHOOK_BASE_URL + "/github/"
 
 # Enable logging
-import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 

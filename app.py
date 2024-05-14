@@ -27,6 +27,7 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
+
 class TelegramBotUvicornWorker(UvicornWorker):
     async def _serve(self) -> None:
         self.config.app = self.wsgi
@@ -35,7 +36,7 @@ class TelegramBotUvicornWorker(UvicornWorker):
 
         # sleep to prevent Telegram's Flood control
         await asyncio.sleep(random.randint(0, 5))
-        
+
         bot_app = await self.config.app.get_bot_app()
         async with bot_app:
             await bot_app.start()
@@ -49,7 +50,7 @@ class TelegramBotUvicornWorker(UvicornWorker):
 class LazyApp:
     def __init__(self):
         self._app = None
-    
+
     async def get_bot_app(self):
         if self._app is None:
             self._app = await create_app()
@@ -61,13 +62,13 @@ class LazyApp:
         await self._app(scope, receive, send)
 
 
-
 async def create_app() -> None:
     bot_app = await create_bot()
 
     auth = HTTPBasicAuth()
     users = dict()
     users[LOG_VIEWER_USERNAME] = generate_password_hash(LOG_VIEWER_PASSWORD)
+
     @auth.verify_password
     def verify_password(username, password):
         if username in users and \
@@ -80,7 +81,7 @@ async def create_app() -> None:
     @flask_app.route('/')
     def root():
         return redirect("https://github.com/mohsenasm/gittybot/blob/main/README.md")
-    
+
     @flask_app.post("/telegram")  # type: ignore[misc]
     async def telegram() -> Response:
         await bot_app.update_queue.put(Update.de_json(data=request.json, bot=bot_app.bot))
@@ -96,7 +97,7 @@ async def create_app() -> None:
     @auth.login_required
     def logs():
         return send_from_directory(os.path.dirname(__file__), 'logs.txt')
-    
+
     asgi_app = WsgiToAsgi(flask_app)
     asgi_app.bot_app = bot_app
 
