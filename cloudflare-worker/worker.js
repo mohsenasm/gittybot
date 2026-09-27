@@ -17,10 +17,10 @@ export default {
             return handlers.webhook(request, ctx);
         } else if (url.pathname === "/ping") {
             return new Response("pong");
-        // } else if (url.pathname === "/registerWebhook") {
-        //     return handlers.registerWebhook(url);
-        // } else if (url.pathname === "/unregisterWebhook") {
-        //     return handlers.unregisterWebhook();
+            // } else if (url.pathname === "/registerWebhook") {
+            //     return handlers.registerWebhook(url);
+            // } else if (url.pathname === "/unregisterWebhook") {
+            //     return handlers.unregisterWebhook();
         } else if (url.pathname.match(/^\/gitlab\/.+$/)) {
             const id = url.pathname.split("/gitlab/")[1];
             return handlers.gitlab(request, id, ctx);
@@ -72,8 +72,8 @@ function createHandlers(config, messageCreator) {
                 return new Response("Unauthorized", { status: 403 });
             }
 
-            const gitlabRequest = JSON.parse(bodyText);
-            const [canSend, message] = messageCreator.gitlab(gitlabRequest);
+            const json = JSON.parse(bodyText);
+            const [canSend, message] = messageCreator.gitlab(json);
 
             if (canSend) {
                 const chatId = parseChatId(id);
@@ -101,8 +101,8 @@ function createHandlers(config, messageCreator) {
             }
 
             const bodyText = new TextDecoder().decode(bodyBuffer);
-            const githubRequest = JSON.parse(bodyText);
-            const [canSend, message] = messageCreator.github(githubRequest);
+            const json = JSON.parse(bodyText);
+            const [canSend, message] = messageCreator.github(request.headers, json);
 
             if (canSend) {
                 const chatId = parseChatId(id);
@@ -265,15 +265,14 @@ function createHandlers(config, messageCreator) {
         const hexSignature = "sha1=" + Array.from(new Uint8Array(signatureBuffer))
             .map(b => b.toString(16).padStart(2, "0"))
             .join("");
-
         return hexSignature === signature;
     }
 }
 
 async function md5(message) {
     const msgUint8 = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
-    
+    const hashBuffer = await crypto.subtle.digest("MD5", msgUint8);
+
     return Array.from(new Uint8Array(hashBuffer))
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
@@ -301,37 +300,37 @@ function escape(text) {
 }
 
 class MessageCreator {
-    gitlab(webhookRequest) {
-        const kind = webhookRequest.json["object_kind"];
+    gitlab(json) {
+        const kind = json["object_kind"];
 
         let message;
 
         if (kind === "push") {
-            const project = escape(webhookRequest.json["project"]["name"]);
-            const ref = escape(webhookRequest.json["ref"].split('/').pop());
-            const userName = escape(webhookRequest.json["user_name"]);
+            const project = escape(json["project"]["name"]);
+            const ref = escape(json["ref"].split('/').pop());
+            const userName = escape(json["user_name"]);
             message = `📢 New <b>${kind}</b> on <i>${project} (${ref})</i> by ${userName} 📢 \n`;
-            const commits = webhookRequest.json["commits"];
+            const commits = json["commits"];
             for (const c of commits) {
                 message += `〰〰〰〰〰\n🔔 ${escape(c["message"])} <i>(${escape(c["author"]["name"])})</i>\n`;
             }
         } else if (kind === "tag_push") {
-            const project = escape(webhookRequest.json["project"]["name"]);
-            const ref = escape(webhookRequest.json["ref"].split('/').pop());
-            const userName = escape(webhookRequest.json["user_name"]);
+            const project = escape(json["project"]["name"]);
+            const ref = escape(json["ref"].split('/').pop());
+            const userName = escape(json["user_name"]);
             message = `📢 New <b>${kind}</b> on <i>${project}</i>(${ref}) by ${userName} 📢 \n`;
         } else if (kind === "issue") {
-            const project = escape(webhookRequest.json["project"]["name"]);
-            const userName = escape(webhookRequest.json["user"]["user_name"]);
+            const project = escape(json["project"]["name"]);
+            const userName = escape(json["user"]["user_name"]);
             message = `📢 New <b>${kind}</b> on <i>${project}</i> by ${userName} 📢 \n`;
-            message += escape(webhookRequest.json["object_attributes"]["title"]);
+            message += escape(json["object_attributes"]["title"]);
         } else if (kind === "pipeline") {
-            const project = escape(webhookRequest.json["project"]["name"]);
-            const userName = escape(webhookRequest.json["commit"]["author"]["name"]);
-            const url = escape(webhookRequest.json["commit"]["url"]);
-            const ref = escape(webhookRequest.json["object_attributes"]["ref"].split('/').pop());
+            const project = escape(json["project"]["name"]);
+            const userName = escape(json["commit"]["author"]["name"]);
+            const url = escape(json["commit"]["url"]);
+            const ref = escape(json["object_attributes"]["ref"].split('/').pop());
             message = `📢 New <b>pipeline</b> event for <a href="${url}">push</a> on <i>${project} (${ref})</i> by ${userName} 📢 \n`;
-            const builds = webhookRequest.json["builds"];
+            const builds = json["builds"];
             for (const b of builds) {
                 let status = b['status'];
                 let detailedStatus = status;
@@ -363,24 +362,24 @@ class MessageCreator {
         return [true, message];
     }
 
-    github(webhookRequest) {
-        const kind = webhookRequest.headers['X-GitHub-Event'];
-        const project = webhookRequest.json["repository"]["name"];
+    github(headers, json) {
+        const kind = headers.get('X-GitHub-Event');
+        const project = json["repository"]["name"];
 
         let message;
 
         if (kind === "push") {
-            const ref = webhookRequest.json["ref"].split('/').pop();
-            const userName = webhookRequest.json["pusher"]['name'];
+            const ref = json["ref"].split('/').pop();
+            const userName = json["pusher"]['name'];
             message = `📢 New <b>Push</b> on <i>${project} (${ref})</i> by ${userName} 📢 \n`;
-            const commits = webhookRequest.json["commits"];
+            const commits = json["commits"];
             for (const c of commits) {
                 message += `〰〰〰〰〰\n🔔 ${c["message"]} <i>(${c["author"]["name"]})</i>\n`;
             }
         } else if (kind === "create") {
-            const ref = webhookRequest.json["ref"];
-            const userName = webhookRequest.json["sender"]['login'];
-            message = `📢 New <b>${webhookRequest.json['ref_type']}</b> on <i>${project}</i>(${ref}) by ${userName} 📢 \n`;
+            const ref = json["ref"];
+            const userName = json["sender"]['login'];
+            message = `📢 New <b>${json['ref_type']}</b> on <i>${project}</i>(${ref}) by ${userName} 📢 \n`;
         } else {
             return [false, ""];
         }
@@ -397,20 +396,20 @@ class MessageCreator {
     }
 
     helpGitlab() {
-        return "1. Go to *your project* on the GitLab website\n" +
-            "2. Click on *setting*⚙ icon\n" +
-            "3. Click on *integrations*\n" +
-            "4. Enter *URL*, *Secret Token* and, check *Enable SSL verification*\n" +
-            "5. Modify *Trigger Check List* and click on *Add Webhook*";
+        return "1\\. Go to *your project* on the GitLab website\n" +
+            "2\\. Click on *⚙ setting* icon\n" +
+            "3\\. Click on *integrations*\n" +
+            "4\\. Enter *URL*, *Secret Token* and, check *Enable SSL verification*\n" +
+            "5\\. Modify *Trigger Check List* and click on *Add Webhook*";
     }
 
     helpGithub() {
-        return "1. Go to *your project* on the GitHub website\n" +
-            "2. Click on *⚙ Settings*\n" +
-            "3. Choose *Webhooks* from left menu\n" +
-            "4. Click on *Add Webhook* button\n" +
-            "5. Enter *URL*, *Secret Token* and, choose *application/json* for the Content type field\n" +
-            "6. Choose *Send me everything.*\n" +
-            "7. Check *Active* and click on *Add Webhook* button";
+        return "1\\. Go to *your project* on the GitHub website\n" +
+            "2\\. Click on *⚙ Settings*\n" +
+            "3\\. Choose *Webhooks* from left menu\n" +
+            "4\\. Click on *Add Webhook* button\n" +
+            "5\\. Enter *URL*, *Secret Token* and, choose *application/json* for the Content type field\n" +
+            "6\\. Choose *Send me everything*\\.\n" +
+            "7\\. Check *Active* and click on *Add Webhook* button";
     }
 }
