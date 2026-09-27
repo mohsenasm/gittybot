@@ -54,12 +54,12 @@ function createHandlers(config, messageCreator) {
                 secret_token: config.BOT_SECRET,
             })).then(res => res.json());
 
-            return new Response("ok" in r && r.ok ? "Ok" : JSON.stringify(r, null, 2));
+            return new Response("ok" in r && r.ok ? `Set "${webhookUrl}"` : JSON.stringify(r, null, 2));
         },
 
         async unregisterWebhook() {
             const r = await fetch(apiUrl("setWebhook", { url: "" })).then(res => res.json());
-            return new Response("ok" in r && r.ok ? "Ok" : JSON.stringify(r, null, 2));
+            return new Response("ok" in r && r.ok ? `Set ""` : JSON.stringify(r, null, 2));
         },
 
         async gitlab(request, id, ctx) {
