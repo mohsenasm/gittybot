@@ -13,7 +13,9 @@ export default {
         const handlers = createHandlers(config, messageCreator);
         const url = new URL(request.url);
 
-        if (url.pathname === config.WEBHOOK_PATH) {
+        if (url.pathname === "/") {
+            return Response.redirect("https://github.com/mohsenasm/gittybot/blob/main/README.md", 301);
+        } else if (url.pathname === config.WEBHOOK_PATH) {
             return handlers.webhook(request, ctx);
         } else if (url.pathname === "/ping") {
             return new Response("pong");
