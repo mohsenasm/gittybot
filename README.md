@@ -30,3 +30,5 @@ Because the project uses a Cloudflare Worker, Cloudflare can see the content tha
 ## License
 
 GNU General Public License
+
+This project also uses code from [telegram-bot-cloudflare](https://github.com/cvzi/telegram-bot-cloudflare), licensed under CC0-1.0.
